@@ -6,12 +6,14 @@ from data_loader import BooksDataLoader
 
 
 def leave_one_out(x):
+
     left_out = choice(list(x))
     x.remove(left_out)
     return x, left_out
 
 
 def partition(X):
+
     new_list = []
     left_out_list = []
 
@@ -32,7 +34,7 @@ def hit_rate(predicted_list, left_out_list):
         predicted = predicted_list[i]
         left_out = left_out_list[i]
 
-        if str(left_out) in predicted:
+        if left_out in predicted:
             hit_count += 1
 
     rate = hit_count / total
@@ -45,18 +47,22 @@ class BookRecommender(object):
 
         self.genre_similarity = BooksDataLoader().get_genre_similarity_matrix()
 
-    def recommend(self, user_list, reviewed_books_list):
+    def books_available(self):
+
+        return self.genre_similarity.columns.values
+
+    def recommend(self, user_list, reviewed_books_list, threshold = 0.4):
 
         def filter_book(b, col):
 
             val = self.genre_similarity.loc[self.genre_similarity.index == b, col].values[0]
-            if val >= 0.4:
+            if val >= threshold:
                 return True
             else:
                 return False
 
         train_size = len(user_list)
-        available_books = self.genre_similarity.columns.values
+        available_books = list(self.books_available())
 
         recommended_books = []
         for i in range(0, train_size):
@@ -66,8 +72,8 @@ class BookRecommender(object):
 
             recommend_to_user = set()
             for book in reviewed_books:
-                similar_books = set(filter(partial(filter_book, int(book)), available_books))
-                recommend_to_user.update(similar_books)
+                filtered_books = set(col for col in available_books if filter_book(book, col))
+                recommend_to_user.update(filtered_books)
 
             recommend_to_user = recommend_to_user - set(reviewed_books)
             recommended_books.append(recommend_to_user)
