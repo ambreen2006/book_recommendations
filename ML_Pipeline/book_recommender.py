@@ -2,7 +2,7 @@ from collections import defaultdict
 from functools import partial
 from random import choice
 
-from data_loader import BooksDataLoader
+from .data_loader import BooksDataLoader
 
 
 def leave_one_out(x):
