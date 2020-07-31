@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block head %}
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '320118702478577',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v7.0'
+    });
+
+    FB.AppEvents.logPageView();
+  };
+
+  function social_login() {
+
+    FB.login(function(response) {
+
+      if (response.authResponse) {
+       console.log('Welcome!  Fetching your information.... ');
+
+       FB.api('/me', function(response) {
+         console.log('Good to see you, ' + response.name + '. ('+response.email+
+          ')');
+         console.log(response)
+         var redirect_url = window.location.origin + '/home';
+         console.log('Base URL ', redirect_url);
+         //window.location.replace("https://writtenwords.herokuapp.com/home")
+       });
+      } else {
+       console.log('User cancelled login or did not fully authorize.');
+      }
+    }, {scope: 'public_profile,email'});
+  }
+
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+  <center>
+    <h1> Login </h1>
+    <div class="fb-login-button"
+    data-size="large"
+    data-button-type="continue_with"
+    data-layout="rounded"
+    data-auto-logout-link="false"
+    data-scope="email, public_profile"
+    data-use-continue-as="false"
+    data-width=""
+    onlogin="social_login();"></div>
+</center>
+{% endblock %}

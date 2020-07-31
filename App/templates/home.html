@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+
+<div class='container-fluid my-sm-2'>
+
+<h4> Add your books</h4>
+
+Add and rate books so better recommendation for the next
+book for you can be made.
+
+<form class="form-inline my-2 my-lg-0" method="POST">
+  <input
+  name="search"
+  class="form-control mr-2 my-4 col-lg"
+  type="search"
+  placeholder="Search"
+  aria-label="Search"/>
+  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
+
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Your Rating</th>
+      </tr>
+    </thead>
+  {% for book in book_list %}
+    <tr>
+      <td>{{book}}</td>
+      <td><img src='/static/thumb-up-2x.png' class='img-thumbnail col-m'/>
+         <img src='/static/thumb-down-2x.png' class='img-thumbnail col-m'/>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+
+
+</div>
+
+{% endblock %}
