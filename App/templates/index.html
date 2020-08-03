@@ -9,13 +9,50 @@
       version    : 'v7.0'
     });
 
-    FB.AppEvents.logPageView();
+    //FB.AppEvents.logPageView();
   };
+
+  function sendUserInfo() {
+    FB.api('/me', function(response) {
+
+      var info = {name: response.name, id:response.id}
+      console.log('Good to see you, ' + response.name + '. ('+response.email+
+       ')');
+      console.log(response)
+
+      console.log('Sending post to /login');
+      fetch('/login', {
+        method: 'POST',
+        headers: new Headers({
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'}),
+        body: JSON.stringify(info)
+
+      }).then(function(response) {
+         console.log(response);
+         var redirect_url = window.location.origin + '/home';
+         console.log('Redirect URL ', redirect_url);
+         window.location.replace(redirect_url);
+      });
+
+
+    });
+  }
 
   function social_login() {
 
-    FB.login(function(response) {
+    FB.getLoginStatus(function (response) {
+        if (response.status == 'connected') {
+          console.log('Connected')
+        }
+        sendUserInfo();
+    });
 
+  }
+
+    //FB.login(function(response) {
+
+/*
       if (response.authResponse) {
        console.log('Welcome!  Fetching your information.... ');
 
@@ -23,16 +60,26 @@
          console.log('Good to see you, ' + response.name + '. ('+response.email+
           ')');
          console.log(response)
-         var redirect_url = window.location.origin + '/home';
-         console.log('Base URL ', redirect_url);
-         //window.location.replace("https://writtenwords.herokuapp.com/home")
+         console.log('Sending post to /login');
+         fetch('/login', {
+           method: 'POST',
+           headers: new Headers({
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json'}),
+           body: JSON.stringify({name: response.name, id: 1})
+
+         }).then(function(response) {
+            console.log(response);
+            var redirect_url = window.location.origin + '/home';
+            console.log('Redirect URL ', redirect_url);
+            window.location.replace(redirect_url);
+         });
+
        });
       } else {
        console.log('User cancelled login or did not fully authorize.');
-      }
-    }, {scope: 'public_profile,email'});
-  }
-
+     }*/
+  //  }, {scope: 'public_profile,email'});
 
   (function(d, s, id){
      var js, fjs = d.getElementsByTagName(s)[0];
@@ -46,7 +93,6 @@
 {% endblock %}
 
 {% block content %}
-
   <center>
     <h1> Login </h1>
     <div class="fb-login-button"

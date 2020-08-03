@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 #ENV = 'DEVELOPMENT'
-ENV = 'RELEASE'
+ENV = 'DEVELOPMENT'
 
 if ENV == 'DEVELOPMENT':
     app.debug = True
@@ -31,6 +31,24 @@ class User(db.Model):
         self.facebook_id = facebook_id
         self.name = facebook_name
 
+class Rating(db.Model):
+
+    __tablename__ = 'ratings'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    book_id = db.Column(db.Integer)
+    rating = db.Column(db.Float)
+    __table_args__ = (db.UniqueConstraint('user_id', 'book_id'), )
+
+    def __init__(self, user_id, book_id, rating):
+        self.user_id = user_id
+        self.book_id = book_id
+        self.rating = rating
+
+
+db.create_all()
+db.session.commit()
+
 parent_path = Path(__file__).resolve().parent.parent
 print('Appending path of the parent directory for module imports: ',
        parent_path)
@@ -43,10 +61,7 @@ from ML_Pipeline.book_recommender import BookRecommender
 books_data_loader = BooksDataLoader()
 recommender = BookRecommender()
 available_books_ids = list(map(int, recommender.books_available()))
-print(available_books_ids)
 available_books = books_data_loader.get_book_details_by_id(available_books_ids)
-print(available_books.columns.values)
-print(available_books.head().title)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -81,24 +96,119 @@ def login():
 
     return render_template('index.html')
 
-@app.route('/home', methods=['POST', 'GET'])
+@app.route('/home', methods=['GET'])
 def home_page():
-
     #TODO If not authorized, redirect to index
 
-    user_name = session['user_name']
+    user_name = ''
+    user_id = 0
+    if user_name in session:
+        user_name = session['user_name']
+
+    if user_id in session:
+        user_id = session['user_id']
+
+    books_rating = db.session.query(Rating).filter_by(user_id=user_id).all()
+    books_rating_dict = {r.book_id:r.rating for r in books_rating}
+
+    books = available_books.loc[available_books.book_id.isin(books_rating_dict.keys()),
+    ['title', 'authors', 'book_id']]
+
+    return render_template('home.html',
+                            book_list=books.to_dict(orient='records'),
+                            user_name=user_name,
+                            books_rating_dict=books_rating_dict)
+
+
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    #TODO If not authorized, redirect to index
+
+    user_name = ''
+    user_id = 0
+    if user_name in session:
+        user_name = session['user_name']
+
+    if user_id in session:
+        user_id = session['user_id']
 
     if request.method == 'POST':
         search_term =  request.form['search'].lower()
         print('Searching for: ', search_term)
         print(available_books.head())
+
+        # find books that matches the Search
         found_books = available_books.loc[available_books.title.str.contains(search_term, case=False),
-        ['title']]
-        return render_template('home.html',
-                                book_list=found_books[:10].title,
+        ['title', 'authors', 'book_id', 'image_url', 'average_rating']]
+
+        # search book ratings of the user
+        books_rating = db.session.query(Rating).filter_by(user_id=user_id).all()
+        books_rating_dict = {r.book_id:r.rating for r in books_rating}
+
+        return render_template('search.html',
+                                book_list=found_books.to_dict(orient='records'),
+                                user_name=user_name,
+                                books_rating_dict=books_rating_dict)
+    else:
+        return render_template('search.html',
                                 user_name=user_name)
 
-    return render_template('home.html', user_name=user_name)
+
+@app.route('/rating', methods=['POST', 'PUT', 'DELETE'])
+def store_user_preference():
+
+    print('Creating ratings')
+    #TODO If not authorized, redirect to index
+    user_id = 0
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+    data = request.get_json()
+    selected_book = data['book_id']
+    user_rating = data['rating']
+
+    if request.method == 'POST':
+        print('Creating new rating for book')
+        # Creating Rating object
+        rating = Rating(user_id, selected_book, user_rating)
+        db.session.add(rating)
+        db.session.commit()
+        return make_response('Success', 201)
+
+    elif request.method == 'PUT':
+        print('Modifying existing rating for book')
+        existing_rating = db.session.query(Rating).filter_by(user_id=user_id,
+                                                             book_id=selected_book).first()
+        existing_rating.rating = user_rating
+        db.session.commit()
+        return make_response('Success', 200)
+
+    elif request.method == 'DELETE':
+        print('Deleting existing rating for book')
+        existing_rating = db.session.query(Rating).filter_by(user_id=user_id,
+                                                             book_id=selected_book).first()
+        db.session.delete(existing_rating)
+        db.session.commit()
+        return make_response('Success', 200)
+
+@app.route('/recommend', methods=['GET'])
+def make_recommendations():
+
+    user_id = 0
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+    rating_list = db.session.query(Rating).filter_by(user_id=user_id).all()
+    selected_books = [rating.book_id for rating in rating_list if rating.rating >= 3]
+    recommended_books = recommender.recommend([user_id], [selected_books])[0]
+    print(recommended_books)
+
+    found_books = available_books.loc[available_books.book_id.isin(recommended_books),
+                        ['title', 'authors', 'book_id']]
+
+    return render_template('recommendations.html',
+                            book_list=found_books.to_dict(orient='records'))
+
 
 
 if __name__ == '__main__':
