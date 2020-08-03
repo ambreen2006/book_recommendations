@@ -2,7 +2,7 @@ from collections import defaultdict
 from functools import partial
 from random import choice
 
-from .data_loader import BooksDataLoader
+from data_loader import BooksDataLoader
 
 
 def leave_one_out(x):
@@ -75,6 +75,7 @@ class BookRecommender(object):
                 filtered_books = set(col for col in available_books if filter_book(book, col))
                 recommend_to_user.update(filtered_books)
 
+            recommend_to_user = set(map(int, recommend_to_user))
             recommend_to_user = recommend_to_user - set(reviewed_books)
             recommended_books.append(recommend_to_user)
 
