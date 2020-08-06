@@ -7,9 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 app.debug = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hcjptrgngifrjk:4621bd3221e1e60d55be828015368cdc4e09f52e5fe6c5274bcae7d6d68c58c4@ec2-107-20-104-234.compute-1.amazonaws.com:5432/de7f4pcsnnpa37'
+app.config['SQLALCHEMY_DATABASE_URI'] = '<replace>'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = b"\xef\xf2\x8aj\x04q\xa0Y\x90'\xbf\n8\x8aa\n"
+app.secret_key = b"<replace>"
 
 db = SQLAlchemy(app)
 
