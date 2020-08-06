@@ -260,12 +260,14 @@ but also somewhat different but relevant content.
 
 ### Limitations
 
-* The dataset seems to have a lot of series data available, I believe I could either exclude series books
-or take into consideration what book the user had already read in series. The nature of the series books are generally 
+* The dataset seems to have a lot of series data available, I believe I could either exclude books in series
+or take into consideration what book the user had already read in series. The nature of the series are generally 
 clustered in some variation of fiction genre. I could consolidate the dataset to consider recommending the series 
-as opposed to individual books. Unlike book-sellers, here we are hoping people to discover new books, if the reader has
+as opposed to individual books in the series. Unlike book-sellers, here we are hoping people to discover new books, if the reader has
 already read and liked a book in series, obviously they'll seek out the next in series, there is no point in recommending
-a book in series 4 or 5. Either the reader hasn't started on the series and we recommend or the user has started on the series
+a book in series 4 or 5, if they had either read none or book 1 in the series. 
+
+Either the reader hasn't started on the series and we recommend it or the user has started on the series
 and so we suppress the recommendation.
 
 * 'Fewer' option isn't useful right now, I could at least exclude the book if it was recommended.
