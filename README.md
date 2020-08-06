@@ -9,7 +9,7 @@
 * [Evaluation](#Evaluation)
 * [Setup](#Setup)
 * [Recommender App](#WebApp)
-* [Limitations and Improvements](#Limitations)
+* [Summary](#Summary)
 * [References](#References)
 
 ## Overview
@@ -92,22 +92,87 @@ If the left out book is present in the recommendation then a hit is considered.
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=Score[Book]&space;=&space;CosineSimilarity[book]_{max}&space;*&space;AuthorWeight[book,&space;Authors_{reader}]&space;*&space;RatingWeight_{smoothed}[book]&space;*&space;BookRatingWeight_{user}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?Score[Book]&space;=&space;CosineSimilarity[book]_{max}&space;*&space;AuthorWeight[book,&space;Authors_{reader}]&space;*&space;RatingWeight_{smoothed}[book]&space;*&space;BookRatingWeight_{user}" title="Score[Book] = CosineSimilarity[book]_{max} * AuthorWeight[book, Authors_{reader}] * RatingWeight_{smoothed}[book] * BookRatingWeight_{user}" /></a>
 
-```Python
+
+```
     score[book] = book_similarity[book] \
                           * get_author_weight(book, read_authors) \
                           * get_ratings_weight(book) \
                           * get_user_book_weight(book, user_rating, max_similar_book)
 ```
 
+### Top-K Recommendations
+
+After the recommendation list is returned, Top-K recommendation further manipulates the rating to add more diversity 
+to the list by punishing repeated authors.
+
+* Recall that the score returned is already sorted.
+* The Top-K algorithm goes through the sorted list and multiplying the score the inverted cardinality of the number of
+  times the author is already seen in the list and insert it in the priority queue.
+
+```
+    priority = -1 * book_recommendations[book] * (1 / authors_cardinality[authors])
+```
+    
+  Multiplication with -1 is implementation details in order to repurpose the heap to return max first.
 
 ## Evaluation
 
-This is the 3rd iteration of the algorithm with the hit rate of `0.8`. The algorithm that only took into
-account genre similarity and the average rating of the book scored hit rate of `0.56`
+### Process
+
+Currently implemented algorithm is the 3rd major iteration.
+
+#### First Iteration
+
+The first iteration had the least personalization aspect to the algorithm. The brief steps and considerations were:
+
+* The cosine similarity between the books and the ratings of the recommended books.
+* When recommendations were requested, the algorithm returns a sorted list of books in the descending order of similarity
+  with the books read and liked by the reader.
+* The final Top-K recommendations were then the top list sorted in descending order by average rating of the books.
+
+The `hit-rate` achieved by the algorithm was `0.56`.
+
+#### Second Iteration
+ 
+The second iteration attempted to increase the personalization aspect by increasing the weights based on the genres read
+by the readers. So the book will have a greater multiplying factor if it belongs to genre most read by the reader, so it
+takes into consideration the cardinality of the genres with respect to the number of books read by the reader for each
+genre.
+
+This however did not result in better `hit rate`.
+
+The Top-K recommendation methodology remained the same as iteration 1.
+
+#### Third Iteration
+
+This iteration removed the weight by cardinality introduced by the 2nd iteration and instead added two different factors
+for personalization.
+
+* Author's weight: If the book shares the author of the books the user had already liked, it will have a higher multiplying
+  factor.
+* User's rating weight: Instead of looking at the cardinality of the common genres for a book in consideration, the most similar book 
+  from the reader's reviewed book is found and the weight returned is the reader's rating for that book.
+  E.g. If the reader rated 'Blink' as `4.2` and another similar book is being scored for recommendation and it is the most similar 
+  to this book `Blink`, then the weight returned would be `4.2`
+
+Initially, the author's weight was doubled but by returning 3 when a shared author is found, I was able to see more of the same authors 
+in the recommendation list. I thought this to be a qualitative improvement. Even though, if I already like an author, 
+I would generally not need them to be recommended but it gives an assurance and I'm most definitely going to want to read
+an author I like.
+
+#### Results
+
+The 3rd iteration of the algorithm produced the hit rate of `0.8`. That means of the test set passed to the algorithm, with
+one liked book left out intentionally, 80% of the time, the recommendation engine recommended that book to the test reader.
+
+The algorithm that only took into account genre similarity and the average rating of the book scored hit rate of `0.56`
 
 The notebook 
 [Recommendations.ipynb](https://github.com/ambreen2006/book_recommendations/blob/master/ML_Pipeline/Recommendations.ipynb)
 is used for the algorithm evaluation.
+
+From the qualitative standpoint, the Top-K method further re-orders the list while limiting the number of results to K by
+discouraging already seen authors.
 
 ## Setup
 
@@ -179,20 +244,42 @@ identify their preference or rating: Fewer like that book, Maybe, More like that
 
 ![](Screenshots/recommendation_page.png)
 
-## Limitations
+## Summary
 
-### Limitations & Improvements
+`Written Words` provides book recommendation based on the content similarity by genres and other personalization
+aspect of the books such as the authors of the books read by the reader.
+
+The project evolved from a very basic cosine similarity between genres to adding more features such as authors and user's 
+rating in consideration. The quantitative metric hit-rate improved from 0.56 to 0.80.
+
+It's definitely not easy to evaluate qualitatively, I could add other factors such as whether the user comes back to
+rate the recommended books, or ask specifically, what they think of recommendations.
+
+Other metrics that can be added would be to gauge diversity of the content so the user is not just shown the most similar
+but also somewhat different but relevant content.
+
+### Limitations
 
 * The dataset seems to have a lot of series data available, I believe I could either exclude series books
-or take into consideration what book the user had already read in series.
+or take into consideration what book the user had already read in series. The nature of the series books are generally 
+clustered in some variation of fiction genre. I could consolidate the dataset to consider recommending the series 
+as opposed to individual books. Unlike book-sellers, here we are hoping people to discover new books, if the reader has
+already read and liked a book in series, obviously they'll seek out the next in series, there is no point in recommending
+a book in series 4 or 5. Either the reader hasn't started on the series and we recommend or the user has started on the series
+and so we suppress the recommendation.
+
+* 'Fewer' option isn't useful right now, I could at least exclude the book if it was recommended.
+
+### Improvements
+
+* There is a lot more unstructured data available that is not being used in making recommendations. There is definitely
+  potential for experimentation.
 
 * I could use book based collaborative filtering for further diversifying the recommendations.
-
-* I could use the 'Fewer' option to exclude the book if it was recommended.
 
 
 ## References
 
 * https://www.udacity.com/course/data-scientist-nanodegree--nd025
 * https://www.manning.com/livevideo/building-recommender-systems-with-machine-learning-and-ai
-*  [goodbooks-10k](https://github.com/zygmuntz/goodbooks-10k)
+* [goodbooks-10k](https://github.com/zygmuntz/goodbooks-10k)
