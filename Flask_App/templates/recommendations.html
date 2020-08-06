@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+
+<div class='container-fluid my-sm-2'>
+
+<h4> Hi {{user_name}}!</h4>
+
+{% if book_list is defined and book_list|length > 0 %}
+  <table class='table-response'>
+  <table class='table' id='books_table'>
+
+  {% for book in book_list %}
+    <tr>
+      <td>
+        {{book.title}}<br/>
+         <b>{{book.authors}}</b>
+      </td>
+      <td align='right'>
+        <div class='btn-group' role='group' id={{book.book_id}}>
+
+        {% set user_rating = -1 %}
+        {% if book.book_id in books_rating_dict %}
+        {% set user_rating = books_rating_dict[book.book_id] %}
+        {% endif %}
+
+        {% if user_rating >=1 and user_rating < 3 %}
+        <button type="button" class="btn btn-outline-danger active"
+                aria-pressed="true"
+                id='fewer'
+                value='1'>Fewer</button>
+        {% else %}
+        <button type="button" class="btn btn-outline-danger"
+                aria-pressed="false"
+                id='fewer'
+                value='1'>Fewer</button>
+        {% endif %}
+
+        {% if user_rating >= 3 and user_rating < 4 %}
+        <button type="button" class="btn btn-outline-secondary active"
+                aria-pressed="true"
+                id='maybe'
+                value='3'>Maybe</button>
+        {% else %}
+        <button type="button" class="btn btn-outline-secondary"
+                aria-pressed="false"
+                id='maybe'
+                value='3'>Maybe</button>
+        {% endif %}
+
+        {% if user_rating >=4  %}
+        <button type="button" class="btn btn-outline-primary active"
+                aria-pressed="true"
+                id='more'
+                value='5'>More</button>
+        {% else %}
+        <button type="button" class="btn btn-outline-primary"
+                aria-pressed="false"
+                id='more'
+                value='5'>More</button>
+       {% endif %}
+        </div>
+      </td>
+
+    </tr>
+  {% endfor %}
+  </table>
+  </table>
+{% endif %}
+
+</div>
+
+
+<script>
+
+const ratingChange = {
+  NEW: 'NEW',
+  EDIT: 'CHANGE',
+  REMOVE: 'REMOVE'
+};
+
+async function persistBookRating(book, user_rating, method) {
+
+  data = {book_id: book, rating: user_rating}
+  console.log('Posting ratings');
+  const response = await fetch('/rating', {
+    method: method,
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  console.log(response);
+}
+
+function resetButtonState(button, group) {
+
+  var changeType = ratingChange.NEW;
+  console.log(group.querySelectorAll('button'));
+
+  group.querySelectorAll('button').forEach((item, i) => {
+    console.log(item);
+
+    const isActive = item.classList.contains('active');
+
+    if (item.id == button.id) {
+      if (isActive) {
+        console.log('Same button previously cliked');
+        item.classList.remove('active');
+        changeType = ratingChange.REMOVE;
+      } else {
+        item.classList.add('active');
+      }
+
+    } else {
+      if (isActive) {
+        item.classList.remove('active');
+        changeType = ratingChange.EDIT;
+      }
+    }
+
+  });
+
+  return changeType;
+}
+
+const table_obj = document.getElementById('books_table');
+if (table_obj) {
+
+  table_obj.addEventListener('click', (event) => {
+    const isButton = event.target.nodeName == 'BUTTON';
+    if (!isButton) return;
+    console.log('clicked with id = '+ event.target.id +
+                ' and value = '+ event.target.value);
+
+    button = event.target;
+    group = button.closest('div');
+    group_id = group.id
+
+    changeType = resetButtonState(button, group);
+
+    switch (changeType) {
+      case ratingChange.NEW:
+        persistBookRating(group_id, event.target.value, 'POST');
+        break;
+      case ratingChange.EDIT:
+        persistBookRating(group_id, event.target.value, 'PUT');
+        break;
+      case ratingChange.REMOVE:
+        persistBookRating(group_id, event.target.value, 'DELETE');
+        break;
+      default:
+        console.log('Undefined behavior');
+    }
+
+    });
+}
+
+</script>
+
+{% endblock %}

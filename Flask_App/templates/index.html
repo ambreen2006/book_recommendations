@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block head %}
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '320118702478577',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v7.0'
+    });
+
+  };
+
+  function sendUserInfo() {
+    FB.api('/me', function(response) {
+      console.log('Good to see you, ' + response.name + '. ('+response.email+
+       ')');
+      console.log(response)
+      console.log('Error', response.error)
+      if (!response.error) {
+        console.log('Sending post to /login');
+        var info = {name: response.name, id:response.id}
+
+        fetch('/login', {
+          method: 'POST',
+          headers: new Headers({
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'}),
+          body: JSON.stringify(info)
+
+        }).then(function(response) {
+           console.log(response);
+           var redirect_url = window.location.origin + '/home';
+           console.log('Redirect URL ', redirect_url);
+           window.location.replace(redirect_url);
+        });
+      }
+
+    });
+  }
+
+  function social_login() {
+
+    FB.getLoginStatus(function (response) {
+        if (response.status == 'connected') {
+          console.log('Connected')
+        }
+        sendUserInfo();
+    });
+
+  }
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+
+  function test_user_login() {
+    //const test_login = document.getElementById("test_login");
+    //if (test_login) {
+
+      addEventListener('click', (event) => {
+
+        var info = {name: 'Test', id:'-1'}
+
+        fetch('/login', {
+          method: 'POST',
+          headers: new Headers({
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'}),
+          body: JSON.stringify(info)
+
+        }).then(function(response) {
+           console.log(response);
+           var redirect_url = window.location.origin + '/home';
+           console.log('Redirect URL ', redirect_url);
+           window.location.replace(redirect_url);
+        });
+      });
+    }
+
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row pt-5">
+    <div class="col"></div>
+    <div class="col text-center">
+      <div class="fb-login-button"
+            data-size="large"
+            data-button-type="continue_with"
+            data-layout="rounded"
+            data-auto-logout-link="false"
+            data-scope="email, public_profile"
+            data-use-continue-as="false"
+            data-width=""
+            onlogin="social_login();"></div>
+    </div>
+    <div class="col"></div>
+  </div>
+
+  <div class="row pt-5">
+    <div class="col"></div>
+    <div class="col text-center"><b>OR</b></div>
+    <div class="col"></div>
+  </div>
+
+  <div class="row pt-5">
+    <div class="col"></div>
+    <div class="col text-center">
+      <button type="button"
+              onclick="test_user_login()"
+              class="btn btn-outline-primary btn-lg"
+              id="test_login"> Login as test user </button></div>
+    <div class="col"></div>
+  </div>
+  </div>
+
+{% endblock %}
