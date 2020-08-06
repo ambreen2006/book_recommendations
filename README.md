@@ -9,6 +9,8 @@ The algorithm depends on a similarity matrix
 
 The recommendations can be viewed with the accompanying app or the notebook provided.
 
+App on free Heroku hosting can be accessed @ [https://writtenwords.herokuapp.com/](https://writtenwords.herokuapp.com/)
+
 ## Data
 
 Data used for books is a mix of [goodbooks-10k](https://github.com/zygmuntz/goodbooks-10k) and 
