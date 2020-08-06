@@ -1,11 +1,18 @@
 # book_recommendations
 
-## Overview & Problem Statement
+* [Overview & Problem Statement](#Overview)
+* [Data](#Data)
+* [Metrics](#Metrics)
+* [Algorithm](#Algorithm)
+* [Evaluation](#Evaluation)
+* [Setup](#Setup)
+* [Recommender App](#Recommender App)
+* [Limitations and Improvements](#Limitations and Improvements)
+
+## Overview
 
 `Written Words` is a book recommendation platform which uses a mix of content based similarity and 
 user preferences to make recommendations. The collection at the time of this writing host 808 books.
-
-The algorithm depends on a similarity matrix 
 
 The recommendations can be viewed with the accompanying app or the notebook provided.
 
@@ -68,7 +75,9 @@ The notebook
 [Recommendations.ipynb](https://github.com/ambreen2006/book_recommendations/blob/master/ML_Pipeline/Recommendations.ipynb)
 is used for the algorithm evaluation.
 
-## Local setup
+## Setup
+
+### Local setup
 
 * Clone repository: `https://github.com/ambreen2006/book_recommendations`
 * Install packages from `written_words_jupyter.txt`
@@ -76,7 +85,7 @@ is used for the algorithm evaluation.
 * Open `Data_Exploration.ipynb` for more information on the data itself.
 * Open `ML_Pipeline/Recommendations.ipynb` for running the recommendation class locally.
 
-## For adding new genres
+### For adding new genres
 
 * Pull the submodule specified in `.gitmodules`
 * Add to the sqlite database `Data/books.db`
@@ -87,7 +96,7 @@ The database looks like this:
 
 * Run `ML_Pipeline/Content_Similarity.ipynb` to generate new matrix.
 
-## Local Flask App Setup
+### Local Flask App Setup
 
 * Install `postgres` locally
 * Create database `written_words`
@@ -97,7 +106,7 @@ The database looks like this:
 * Run from `book_recommendations` directory `python Flask_App/main.py`
 * Note that you cannot login with Facebook if running locally, however, test user is available but shared.
 
-## Heroku Setup
+### Heroku Setup
 
 * Run `python Heroku_Setup/preprare.py '<destination>'` from `book_recommendations`
 * Follow Heroku Setup
@@ -132,7 +141,7 @@ identify their preference or rating: Fewer like that book, Maybe, More like that
 
 ![](Screenshots/recommendation_page.png)
 
-## Limitations & Improvements
+## Limitations and Improvements
 
 * The dataset seems to have a lot of series data available, I believe I could either exclude series books
 or take into consideration what book the user had already read in series.
@@ -140,6 +149,3 @@ or take into consideration what book the user had already read in series.
 * I could use book based collaborative filtering for further diversifying the recommendations.
 
 * I could use the 'Fewer' option to exclude the book if it was recommended.
-
-
-
