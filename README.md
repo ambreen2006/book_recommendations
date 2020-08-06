@@ -6,8 +6,8 @@
 * [Algorithm](#Algorithm)
 * [Evaluation](#Evaluation)
 * [Setup](#Setup)
-* [Recommender App](#Recommender App)
-* [Limitations and Improvements](#Limitations and Improvements)
+* [Recommender App](#WebApp)
+* [Limitations and Improvements](#Limitations)
 
 ## Overview
 
@@ -114,7 +114,11 @@ The database looks like this:
 * Update the `app.config`
 * Push to the heroku git branch
 
-## Recommender App
+## WebApp
+
+### Written Words - Recommender App
+
+[https://writtenwords.herokuapp.com/](https://writtenwords.herokuapp.com/)
 
 * The main page has two options: login with Facebook or the test user. Test user is shared so, anyone 
 making changes to the list would be persistent.
@@ -141,7 +145,9 @@ identify their preference or rating: Fewer like that book, Maybe, More like that
 
 ![](Screenshots/recommendation_page.png)
 
-## Limitations and Improvements
+## Limitations
+
+### Limitations & Improvements
 
 * The dataset seems to have a lot of series data available, I believe I could either exclude series books
 or take into consideration what book the user had already read in series.
