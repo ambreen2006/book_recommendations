@@ -16,8 +16,8 @@
 
 ### Overview & Problem Statement 
 
-This project is my submission for the Udacity Data Scientist NanoDegree Program. The most important reason
-why I choose to work on a book recommender system is that I'm a passionate reader and although there are several
+This project is my submission for the [Udacity Data Scientist NanoDegree Program](https://www.udacity.com/course/data-scientist-nanodegree--nd025). The most important reason
+why I chose to work on a book recommender system is that I'm a passionate reader and although there are several
 solutions out there, the inherent nature of recommendation's viability being dependent on a person's idiosyncrasies, 
 opens up this area to creative solutions from plethora of different approaches and point of views.
 
