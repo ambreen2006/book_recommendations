@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 app.debug = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hcjptrgngifrjk:4621bd3221e1e60d55be828015368cdc4e09f52e5fe6c5274bcae7d6d68c58c4@ec2-107-20-104-234.compute-1.amazonaws.com:5432/de7f4pcsnnpa37'
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = b"\xef\xf2\x8aj\x04q\xa0Y\x90'\xbf\n8\x8aa\n"
 
@@ -100,8 +99,6 @@ def home_page():
     if 'user_id' not in session:
         return render_template('index.html')
 
-    #user_name = ''
-    #user_id = -1
     if 'user_name' in session:
         user_name = session['user_name']
 
@@ -123,18 +120,14 @@ def home_page():
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
-    # TODO If not authorized, redirect to index
 
     if 'user_id' not in session:
         return render_template('index.html')
 
-    user_name = ''
-    user_id = -1
     if 'user_name' in session:
         user_name = session['user_name']
 
-    if 'user_id' in session:
-        user_id = session['user_id']
+    user_id = session['user_id']
 
     if request.method == 'POST':
         search_term = request.form['search'].lower()
@@ -167,9 +160,7 @@ def store_user_preference():
     if 'user_id' not in session:
         return render_template('index.html')
 
-    user_id = -1
-    if 'user_id' in session:
-        user_id = session['user_id']
+    user_id = session['user_id']
 
     data = request.get_json()
     selected_book = data['book_id']
@@ -206,7 +197,11 @@ def make_recommendations():
     if 'user_id' not in session:
         return render_template('index.html')
 
+    if 'user_name' in session:
+        user_name = session['user_name']
+
     user_id = session['user_id']
+
     print('user_id', user_id)
 
     rating_list = db.session.query(Rating).filter_by(user_id=user_id).all()
@@ -220,8 +215,8 @@ def make_recommendations():
     recommended_books = recommender.recommend([user_id],
                                               [selected_books],
                                               [user_ratings])[0]
-    print(list(recommended_books)[:20])
-    recommended_books = recommender.get_top_recommendations(recommended_books, k=30)
+
+    recommended_books = recommender.get_top_recommendations(recommended_books, k=50)
     print(recommended_books)
 
     top_md = pd.DataFrame(columns=['book_id', 'title', 'authors', 'average_rating'])
@@ -232,12 +227,12 @@ def make_recommendations():
                                 ['book_id', 'title', 'authors', 'average_rating']])
 
     return render_template('recommendations.html',
-                           book_list=top_md.to_dict(orient='records'))
+                           book_list=top_md.to_dict(orient='records'),
+                           user_name=user_name)
 
 
 if __name__ == '__main__':
     print('Starting recommender app')
-    ENV = 'DEVELOPMENT'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:pgpass@localhost/written_words'
     app.debug = True
     app.run()
