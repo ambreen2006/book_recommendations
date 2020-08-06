@@ -14,7 +14,7 @@
 
 ## Overview
 
-### Overview & Problem Statement 
+### Problem Statement 
 
 This project is my submission for the [Udacity Data Scientist NanoDegree Program](https://www.udacity.com/course/data-scientist-nanodegree--nd025). The most important reason
 why I chose to work on a book recommender system is that I'm a passionate reader and although there are several
@@ -30,11 +30,15 @@ from one point in time to another. When you are not looking for something specif
 say for example a textbook or already have a book in your mind, then it is hard to know what you might be most likely
 to purchase and there is always this struggle of recommendations being made to you for the purpose of selling the product,
 such as the latest release of a book in the genre you've purchased before but a book released say for example few years
-back may still be the perfect read for you but may not serve a business's purpose. With, `Written Words` you can discover
-books similar to what you had read before and liked and not just only from that genre and hence allows gentle 
-exploration of new content. This project is not a complete manifestation of what I have envisioned but just a starting point.
+back may still be the perfect read for you but may not serve a business's purpose. 
 
-`Written Words` uses a mix of content based similarity and user preferences to make recommendations. 
+### Objective
+
+With, `Written Words` you can discover books similar to what you had read before and liked and not just only from that genre and hence allows gentle 
+exploration of new content. The recommender system uses a mix of content based similarity and user preferences to make recommendations. 
+I expect the project to become much more feature rich in the future allowing people to discover interesting books with 
+consideration to their liking as well as the quality of the contents.
+
 The collection at the time of this writing host 808 books.
 
 The recommendations can be viewed with the accompanying app or the notebook provided.
