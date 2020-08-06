@@ -94,7 +94,6 @@ def login():
 
 @app.route('/home', methods=['GET'])
 def home_page():
-    # TODO If not authorized, redirect to index
 
     if 'user_id' not in session:
         return render_template('index.html')
@@ -155,7 +154,6 @@ def search():
 @app.route('/rating', methods=['POST', 'PUT', 'DELETE'])
 def store_user_preference():
     print('Creating ratings')
-    # TODO If not authorized, redirect to index
 
     if 'user_id' not in session:
         return render_template('index.html')
