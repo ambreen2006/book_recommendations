@@ -69,7 +69,7 @@ If the left out book is present in the recommendation then a hit is considered.
 ## Evaluation
 
 This is the 3rd iteration of the algorithm with the hit rate of `0.8`. The algorithm that only took into
-account genre similarity and the average rating of the book score hit rate of `0.56`
+account genre similarity and the average rating of the book scored hit rate of `0.56`
 
 The notebook 
 [Recommendations.ipynb](https://github.com/ambreen2006/book_recommendations/blob/master/ML_Pipeline/Recommendations.ipynb)
