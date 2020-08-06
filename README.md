@@ -1,5 +1,7 @@
 # book_recommendations
 
+## Index
+
 * [Overview & Problem Statement](#Overview)
 * [Data](#Data)
 * [Metrics](#Metrics)
@@ -8,11 +10,32 @@
 * [Setup](#Setup)
 * [Recommender App](#WebApp)
 * [Limitations and Improvements](#Limitations)
+* [References](#References)
 
 ## Overview
 
-`Written Words` is a book recommendation platform which uses a mix of content based similarity and 
-user preferences to make recommendations. The collection at the time of this writing host 808 books.
+### Overview & Problem Statement 
+
+This project is my submission for the Udacity Data Scientist NanoDegree Program. The most important reason
+why I choose to work on a book recommender system is that I'm a passionate reader and although there are several
+solutions out there, the inherent nature of recommendation's viability being dependent on a person's idiosyncrasies, 
+opens up this area to creative solutions from plethora of different approaches and point of views.
+
+If you are buying a commodity product such as for example a shampoo, it might probably be logical to think that 
+perhaps, you may also be interested in the conditioner. Or if you buy a cat's toy, then you might also be interested in
+cat food, but I think that there will be less variability in your interest in buying what is recommended and or available.
+Books unlike those kind of products span from a necessity or educational to entertainment and beyond. It is I believe a 
+hard problem to figure out what you might want at a given point in time, because your mood to read something may change
+from one point in time to another. When you are not looking for something specific, 
+say for example a textbook or already have a book in your mind, then it is hard to know what you might be most likely
+to purchase and there is always this struggle of recommendations being made to you for the purpose of selling the product,
+such as the latest release of a book in the genre you've purchased before but a book released say for example few years
+back may still be the perfect read for you but may not serve a business's purpose. With, `Written Words` you can discover
+books similar to what you had read before and liked and not just only from that genre and hence allows gentle 
+exploration of new content. This project is not a complete manifestation of what I have envisioned but just a starting point.
+
+`Written Words` uses a mix of content based similarity and user preferences to make recommendations. 
+The collection at the time of this writing host 808 books.
 
 The recommendations can be viewed with the accompanying app or the notebook provided.
 
@@ -155,3 +178,10 @@ or take into consideration what book the user had already read in series.
 * I could use book based collaborative filtering for further diversifying the recommendations.
 
 * I could use the 'Fewer' option to exclude the book if it was recommended.
+
+
+## References
+
+* https://www.udacity.com/course/data-scientist-nanodegree--nd025
+* https://www.manning.com/livevideo/building-recommender-systems-with-machine-learning-and-ai
+*  [goodbooks-10k](https://github.com/zygmuntz/goodbooks-10k)
