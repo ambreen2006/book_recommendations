@@ -63,6 +63,8 @@ If the left out book is present in the recommendation then a hit is considered.
 
 ## Algorithm
 
+### Current Implementation
+
 1. Content similarity matrix is created based on the cosine similarity between the genre's of the books.
    This is done separately and ahead of time in 
    [ML_Pipeline/Content_Similarity.ipynb](https://github.com/ambreen2006/book_recommendations/blob/master/ML_Pipeline/Content_Similarity.ipynb)
@@ -87,12 +89,17 @@ If the left out book is present in the recommendation then a hit is considered.
 
 1 and 2 takes are content based while 3 and 4 provides personalization to the recommendation.
 
-```
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=Score[Book]&space;=&space;CosineSimilarity[book]_{max}&space;*&space;AuthorWeight[book,&space;Authors_{reader}]&space;*&space;RatingWeight_{smoothed}[book]&space;*&space;BookRatingWeight_{user}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?Score[Book]&space;=&space;CosineSimilarity[book]_{max}&space;*&space;AuthorWeight[book,&space;Authors_{reader}]&space;*&space;RatingWeight_{smoothed}[book]&space;*&space;BookRatingWeight_{user}" title="Score[Book] = CosineSimilarity[book]_{max} * AuthorWeight[book, Authors_{reader}] * RatingWeight_{smoothed}[book] * BookRatingWeight_{user}" /></a>
+
+```Python
     score[book] = book_similarity[book] \
                           * get_author_weight(book, read_authors) \
                           * get_ratings_weight(book) \
                           * get_user_book_weight(book, user_rating, max_similar_book)
 ```
+
+
 ## Evaluation
 
 This is the 3rd iteration of the algorithm with the hit rate of `0.8`. The algorithm that only took into
